@@ -2,7 +2,7 @@
   <h2>{{ assessmentDetails?.assessmentName || 'Online Test' }}</h2>
 
   <!-- Show the personal details form if test hasn't started yet and not completed -->
-  <div *ngIf="!testStarted && !testCompleted">
+  <div *ngIf="!testStarted && !testCompleted " >
     <h3>Please enter your details to start the test</h3>
     <form [formGroup]="personalDetailsForm" (ngSubmit)="startTest()">
       <!-- Name Field -->
@@ -34,7 +34,7 @@
   </div>
 
   <!-- Show the test questions once the test starts -->
-  <div *ngIf="testStarted && !testCompleted  && !testAlreadyCompleted">
+  <div *ngIf="testStarted && !testCompleted  && !testAlreadyCompleted && !testLocked" >
     <!-- Question Navigation Grid -->
     <div class="question-navigation">
       <div 
@@ -60,8 +60,10 @@
                [name]="questions[currentQuestionIndex].questionno"
                [checked]="isOptionSelected(option)"
                (click)="saveAnswer(option)">
-          </div>
-        <label>{{ option }}</label>
+      
+       
+      </div>
+      <label>{{ option }}</label>
       </div>
 
       <!-- Navigation -->
@@ -79,12 +81,16 @@
 
   <!-- Display Test Completion Message -->
   <div *ngIf="testCompleted" class="completion-message">
-    <h3>Test Submitted Successfully!</h3>
+    <h4>Test Submitted Successfully!</h4>
     <p>Thank you for completing the test. Your responses have been recorded.</p>
   </div>
   <div *ngIf="testAlreadyCompleted" class="completion-message">
-    <h3>You have already completed this test.</h3>
+    <h4>You have already completed this test.</h4>
     <p>Your responses have been recorded, and you cannot retake this test.</p>
+  </div>
+  <div *ngIf="testLocked" class="completion-message">
+    <h4>Your test Has been locked as you attempted switching tabs</h4>
+    <p>Contact Team to unlock the test if the switch is not intentional</p>
   </div>
 </div>
 

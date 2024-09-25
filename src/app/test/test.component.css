@@ -11,7 +11,7 @@
 
 /* Heading styles */
 h2, h3 {
-  text-align: center;
+  text-align: left;
   margin-bottom: 25px;
   color: #333;
 }
@@ -124,14 +124,15 @@ small {
 .option-container .option {
   margin-right: 5px; 
  
-  width: 10px;
+  width: 5%;
   float: left;
 }
 
 .option-container label {
   
   float: left;
-  margin-left: 15px;;
+  margin-left: 15px;
+  width:90%
 }
 
 
@@ -194,5 +195,18 @@ label {
   .submit-btn {
     font-size: 16px;
     padding: 10px 20px;
+  }
+  .option-container .option {
+    margin-right: 5px; 
+   
+    width: 5%;
+    float: left;
+  }
+  
+  .option-container label {
+    
+    float: left;
+    margin-left: 15px;
+    width:87%;
   }
 }

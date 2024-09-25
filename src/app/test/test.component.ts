@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { AssessmentService } from '../services/assessment.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -17,7 +17,7 @@ export class TestComponent implements OnInit, OnDestroy {
   testStarted = false;
   testCompleted = false; // To handle the display when test is completed
   testAlreadyCompleted = false; // New state for already completed tests
-
+  testLocked=false;
   currentQuestionIndex = 0;
   totalQuestions = 0;
   assessmentDetails: any;
@@ -71,11 +71,15 @@ export class TestComponent implements OnInit, OnDestroy {
 
       this.assessmentService.getStatus(assessmentCode, email).subscribe(
         (status) => {
-          if (status.testStatus) {
+          if (status.testStatus==true) {
             this.testAlreadyCompleted = true;
             return; // Stop further execution if the test is already completed
           }
-
+          
+          if(status.testStatus=="locked"){
+            this.testLocked=true;
+            return;
+          }
           this.statusObject = status;
           this.questions = status.questionnos;
           this.totalQuestions = this.questions.length;
@@ -183,41 +187,63 @@ export class TestComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.statusObject.testStatus = true;
-        this.testCompleted = true; // Set testCompleted to true
-
+        // Set testCompleted to true
+        this.finishTest()
         // Stop the interval and timer when submitting
-        if (this.intervalSubscription) {
-          this.intervalSubscription.unsubscribe();
-        }
-        clearInterval(this.timerInterval);
+    }
+    });
+  }
 
-        console.log('Submitting final status update...');
-        
-        // Save final status before evaluating
+    // Detect when the tab becomes inactive
+    @HostListener('document:visibilitychange', ['$event'])
+    handleVisibilityChange(event: Event) {
+      if(this.testStarted && !this.testAlreadyCompleted && !this.testCompleted && !this.testLocked)
+      if (document.hidden) {
+        this.statusObject.testStatus="locked";
         this.assessmentService.saveStatus(this.statusObject).subscribe({
-          next: () => {
-            console.log('Status saved successfully. Calling evaluate endpoint...');
-
-            // Now call the evaluate endpoint after successfully saving the status
-            this.assessmentService.evaluateTest(this.statusObject.email, this.statusObject.assessmentcode)
-              .subscribe({
-                next: (response) => {
-                  console.log("Evaluation completed successfully:", response);
-                  this.router.navigate(['/confirmation']); // Redirect to a confirmation page after evaluation
-                },
-                error: (e) => {
-                  console.error("Evaluation error:", e);
-                  alert('An error occurred while evaluating your test. Please try again.'); 
-                }
-              });
-          },
-          error: (e) => {
-            console.error("Error saving status:", e);
-            alert('An error occurred while saving your status. Please try again.');
-          }
+          next: () => console.log("Status saved successfully after answering"),
+          error: (e) => console.log(e)
         });
+        this.testLocked=true;
+        alert("You tried to switch tab or minimize window your test is going to be locked")
+      } else {
+       
+      }
+    }
+
+  finishTest(){
+    this.testCompleted = true;
+    if (this.intervalSubscription) {
+      this.intervalSubscription.unsubscribe();
+    }
+    clearInterval(this.timerInterval);
+
+    console.log('Submitting final status update...');
+    
+    // Save final status before evaluating
+    this.assessmentService.saveStatus(this.statusObject).subscribe({
+      next: () => {
+        console.log('Status saved successfully. Calling evaluate endpoint...');
+
+        // Now call the evaluate endpoint after successfully saving the status
+        this.assessmentService.evaluateTest(this.statusObject.email, this.statusObject.assessmentcode)
+          .subscribe({
+            next: (response) => {
+              console.log("Evaluation completed successfully:", response);
+              this.router.navigate(['/confirmation']); // Redirect to a confirmation page after evaluation
+            },
+            error: (e) => {
+              console.error("Evaluation error:", e);
+              alert('An error occurred while evaluating your test. Please try again.'); 
+            }
+          });
+      },
+      error: (e) => {
+        console.error("Error saving status:", e);
+        alert('An error occurred while saving your status. Please try again.');
       }
     });
+ 
   }
 
   startTimer() {
@@ -227,12 +253,15 @@ export class TestComponent implements OnInit, OnDestroy {
         this.statusObject.currentDuration = (this.statusObject.duration * 60 - this.timer) / 60;
       } else {
         clearInterval(this.timerInterval);
-        this.submitTest(); // Auto-submit when time is up
+        this.finishTest(); // Auto-submit when time is up
       }
 
       if (this.timer === 120) {
         alert('Only 2 minutes remaining!');
       }
-    }, 1000);
+      if (this.timer === 30) {
+        alert('last 30 seconds');
+      }
+    }, 990);
   }
 }

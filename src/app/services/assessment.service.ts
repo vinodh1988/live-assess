@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AssessmentService {
-  private apiUrl = 'http://15.207.18.117:5000'; // Update this with your actual backend URL
+  private apiUrl = 'http://localhost:5000'; // Update this with your actual backend URL
 
   constructor(private http: HttpClient) {}
 
@@ -41,4 +41,6 @@ export class AssessmentService {
     const payload = { email, assessmentcode: assessmentCode };
     return this.http.post(`${this.apiUrl}/assessments/evaluate`, payload);
   }
+
+
 }

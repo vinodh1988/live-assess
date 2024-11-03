@@ -1,0 +1,20 @@
+.container {
+    text-align: center;
+    margin-top: 50px;
+  }
+  
+  h2 {
+    color: #f44336;
+  }
+  
+  .back-home-link {
+    margin-top: 20px;
+    display: inline-block;
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .back-home-link:hover {
+    text-decoration: underline;
+  }
+  

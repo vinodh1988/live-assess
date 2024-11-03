@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { interval, Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-test',
@@ -17,7 +18,8 @@ export class TestComponent implements OnInit, OnDestroy {
   testStarted = false;
   testCompleted = false; // To handle the display when test is completed
   testAlreadyCompleted = false; // New state for already completed tests
-  testLocked=false;
+  testLocked = false;
+  testExpired = false;
   currentQuestionIndex = 0;
   totalQuestions = 0;
   assessmentDetails: any;
@@ -33,7 +35,8 @@ export class TestComponent implements OnInit, OnDestroy {
     private assessmentService: AssessmentService, 
     private route: ActivatedRoute, 
     private router: Router,
-    public dialog: MatDialog // Injecting MatDialog
+    public dialog: MatDialog,
+    private sanitizer: DomSanitizer // Add sanitizer
   ) {
     this.personalDetailsForm = this.fb.group({
       name: ['', Validators.required],
@@ -48,7 +51,6 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Unsubscribe and clear intervals to prevent memory leaks
     if (this.intervalSubscription) {
       this.intervalSubscription.unsubscribe();
     }
@@ -58,6 +60,8 @@ export class TestComponent implements OnInit, OnDestroy {
   loadAssessmentDetails(assessmentCode: string): void {
     this.assessmentService.getTestDetails(assessmentCode).subscribe((details) => {
       this.assessmentDetails = details;
+      if(details.status==="expired")
+          this.testExpired=true
     });
   }
 
@@ -71,20 +75,19 @@ export class TestComponent implements OnInit, OnDestroy {
 
       this.assessmentService.getStatus(assessmentCode, email).subscribe(
         (status) => {
-          if (status.testStatus==true) {
+          if (status.testStatus == true) {
             this.testAlreadyCompleted = true;
-            return; // Stop further execution if the test is already completed
+            return;
           }
-          
-          if(status.testStatus=="locked"){
-            this.testLocked=true;
+
+          if (status.testStatus == "locked") {
+            this.testLocked = true;
             return;
           }
           this.statusObject = status;
           this.questions = status.questionnos;
           this.totalQuestions = this.questions.length;
 
-          // Initialize answeredQuestions and answers array for all questions
           this.answeredQuestions = this.questions.map((question, index) => {
             const hasAnswered = status.answers[index]?.length > 0 || false;
             if (!this.statusObject.answers[index]) {
@@ -97,27 +100,24 @@ export class TestComponent implements OnInit, OnDestroy {
           this.startTimer();
         },
         () => {
-          // Handle 404 - Fresh session
           this.assessmentService.getOriginalQuestions(assessmentCode).subscribe((questions) => {
-               this.assessmentService.getTestDetails(assessmentCode).subscribe((details)=>{
-                this.questions = questions;
-                this.totalQuestions = questions.length;
-    
-                // Initialize answers and answeredQuestions arrays
-                this.answeredQuestions = questions.map(() => false);
-                this.statusObject = {
-                  name, email, phone, assessmentcode: assessmentCode,
-                  questionnos: questions, answers: Array(questions.length).fill([]), // Initialize all answers as empty arrays
-                  duration: details.duration, currentDuration: 0, testStatus: false
-                };
-                this.timer = this.statusObject.duration * 60;
-                this.startTimer();
-               })
+            this.assessmentService.getTestDetails(assessmentCode).subscribe((details) => {
+              this.questions = questions;
+              this.totalQuestions = questions.length;
+
+              this.answeredQuestions = questions.map(() => false);
+              this.statusObject = {
+                name, email, phone, assessmentcode: assessmentCode,
+                questionnos: questions, answers: Array(questions.length).fill([]),
+                duration: details.duration, currentDuration: 0, testStatus: false
+              };
+              this.timer = this.statusObject.duration * 60;
+              this.startTimer();
+            })
           });
         }
       );
 
-      // Periodically save the status every minute
       this.intervalSubscription = interval(60000).subscribe(() =>
         this.assessmentService.saveStatus(this.statusObject).subscribe({
           next: () => console.log("Status saved successfully"),
@@ -148,7 +148,6 @@ export class TestComponent implements OnInit, OnDestroy {
 
     this.answeredQuestions[this.currentQuestionIndex] = true;
 
-    // Save status immediately after answering a question
     this.assessmentService.saveStatus(this.statusObject).subscribe({
       next: () => console.log("Status saved successfully after answering"),
       error: (e) => console.log(e)
@@ -187,63 +186,49 @@ export class TestComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.statusObject.testStatus = true;
-        // Set testCompleted to true
-        this.finishTest()
-        // Stop the interval and timer when submitting
-    }
+        this.finishTest();
+      }
     });
   }
 
-    // Detect when the tab becomes inactive
-    @HostListener('document:visibilitychange', ['$event'])
-    handleVisibilityChange(event: Event) {
-      if(this.testStarted && !this.testAlreadyCompleted && !this.testCompleted && !this.testLocked)
+  @HostListener('document:visibilitychange', ['$event'])
+  handleVisibilityChange(event: Event) {
+    if (this.testStarted && !this.testAlreadyCompleted && !this.testCompleted && !this.testLocked) {
       if (document.hidden) {
-        this.statusObject.testStatus="locked";
+        this.statusObject.testStatus = "locked";
         this.assessmentService.saveStatus(this.statusObject).subscribe({
           next: () => console.log("Status saved successfully after answering"),
           error: (e) => console.log(e)
         });
-        this.testLocked=true;
-        alert("You tried to switch tab or minimize window your test is going to be locked")
-      } else {
-       
+        this.testLocked = true;
+        alert("You tried to switch tab or minimize window, your test is going to be locked");
       }
     }
+  }
 
-  finishTest(){
+  finishTest() {
     this.testCompleted = true;
     if (this.intervalSubscription) {
       this.intervalSubscription.unsubscribe();
     }
     clearInterval(this.timerInterval);
 
-    console.log('Submitting final status update...');
-    
-    // Save final status before evaluating
     this.assessmentService.saveStatus(this.statusObject).subscribe({
       next: () => {
-        console.log('Status saved successfully. Calling evaluate endpoint...');
-
-        // Now call the evaluate endpoint after successfully saving the status
         this.assessmentService.evaluateTest(this.statusObject.email, this.statusObject.assessmentcode)
           .subscribe({
             next: (response) => {
-              console.log("Evaluation completed successfully:", response);
-              this.router.navigate(['/confirmation']); // Redirect to a confirmation page after evaluation
+              this.router.navigate(['/confirmation']);
             },
             error: (e) => {
-              console.error("Evaluation error:", e);
-              alert('An error occurred while evaluating your test. Please try again.'); 
+              alert('An error occurred while evaluating your test. Please try again.');
             }
           });
       },
       error: (e) => {
-        console.error("Error saving status:", e);
         alert('An error occurred while saving your status. Please try again.');
       }
     });
- 
   }
 
   startTimer() {
@@ -253,15 +238,24 @@ export class TestComponent implements OnInit, OnDestroy {
         this.statusObject.currentDuration = (this.statusObject.duration * 60 - this.timer) / 60;
       } else {
         clearInterval(this.timerInterval);
-        this.finishTest(); // Auto-submit when time is up
+        this.finishTest();
       }
 
       if (this.timer === 120) {
         alert('Only 2 minutes remaining!');
       }
       if (this.timer === 30) {
-        alert('last 30 seconds');
+        alert('Last 30 seconds');
       }
     }, 990);
+  }
+
+  // Function to escape HTML tags and convert \n to <br>
+  escapeHTMLTags(content: string): SafeHtml {
+    const sanitizedContent = content
+      .replace(/<\/?(?!br)([^>]+)>/gi, match => match.replace(/</g, '&lt;').replace(/>/g, '&gt;')) // Escape all HTML tags except <br>
+      .replace(/\n/g, '<br>'); // Convert newlines to <br>
+
+    return this.sanitizer.bypassSecurityTrustHtml(sanitizedContent); // Safely bind HTML
   }
 }

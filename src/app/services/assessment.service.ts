@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AssessmentService {
-  private apiUrl = 'http://localhost:5000'; // Update this with your actual backend URL
+  private apiUrl = 'http://15.207.18.117:5000'; // Update this with your actual backend URL
 
   private apiKey = (window as any).appConfig.api_key;
   private getHeaders() {

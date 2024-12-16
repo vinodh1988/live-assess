@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, interval } from 'rxjs';
 import { AssessmentService } from '../services/assessment.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { interval, Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -10,28 +10,25 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 @Component({
   selector: 'app-test',
   templateUrl: './test.component.html',
-  styleUrls: ['./test.component.css'],
+  styleUrls: ['./test.component.css']
 })
 export class TestComponent implements OnInit, OnDestroy {
   personalDetailsForm: FormGroup;
+  submitted = false;
   testStarted = false;
-  testCompleted = false;
+  testCompleted = false; // To handle the display when test is completed
+  testAlreadyCompleted = false; // New state for already completed tests
   testLocked = false;
   testExpired = false;
-  testAlreadyCompleted = false;
-
-  assessmentDetails: any;
-  questions: any[] = [];
   currentQuestionIndex = 0;
-  answeredQuestions: boolean[] = [];
   totalQuestions = 0;
-
-  timer = 0;
-  timerInterval: any;
-  intervalSubscription: Subscription;
-
+  assessmentDetails: any;
+  timer: number = 0; // In seconds
+  questions: any[] = [];
+  answeredQuestions: boolean[] = []; // Track answered questions
   statusObject: any;
-  submitted = false;
+  intervalSubscription: Subscription; // For periodic save
+  timerInterval: any; // For timer handling
 
   constructor(
     private fb: FormBuilder,
@@ -39,12 +36,12 @@ export class TestComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     public dialog: MatDialog,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer // Add sanitizer
   ) {
     this.personalDetailsForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]]
     });
   }
 
@@ -63,7 +60,7 @@ export class TestComponent implements OnInit, OnDestroy {
   loadAssessmentDetails(assessmentCode: string): void {
     this.assessmentService.getTestDetails(assessmentCode).subscribe((details) => {
       this.assessmentDetails = details;
-      if (details.status === 'expired') {
+      if (details.status === "expired") {
         this.testExpired = true;
       }
     });
@@ -71,6 +68,7 @@ export class TestComponent implements OnInit, OnDestroy {
 
   startTest(): void {
     this.submitted = true;
+
     if (this.personalDetailsForm.valid) {
       this.testStarted = true;
       const { name, email, phone } = this.personalDetailsForm.value;
@@ -82,66 +80,59 @@ export class TestComponent implements OnInit, OnDestroy {
             this.testAlreadyCompleted = true;
             return;
           }
-          if (status.testStatus === 'locked') {
+
+          if (status.testStatus === "locked") {
             this.testLocked = true;
             return;
           }
 
-          this.initializeTest(status, name, email, phone, assessmentCode);
+          this.statusObject = status;
+          this.questions = status.questionnos;
+          this.totalQuestions = this.questions.length;
+
+          this.answeredQuestions = this.questions.map((question, index) => {
+            const hasAnswered = status.answers[index]?.length > 0 || false;
+            if (!this.statusObject.answers[index]) {
+              this.statusObject.answers[index] = [];
+            }
+            return hasAnswered;
+          });
+
+          this.timer = this.statusObject.duration * 60 - this.statusObject.currentDuration * 60;
+          this.startTimer();
         },
         () => {
-          this.fetchOriginalQuestions(name, email, phone, assessmentCode);
+          this.assessmentService.getOriginalQuestions(assessmentCode).subscribe((questions) => {
+            this.assessmentService.getTestDetails(assessmentCode).subscribe((details) => {
+              this.questions = questions;
+              this.totalQuestions = questions.length;
+
+              this.answeredQuestions = questions.map(() => false);
+              this.statusObject = {
+                name,
+                email,
+                phone,
+                assessmentcode: assessmentCode,
+                questionnos: questions,
+                answers: Array(questions.length).fill([]),
+                duration: details.duration,
+                currentDuration: 0,
+                testStatus: false
+              };
+              this.timer = this.statusObject.duration * 60;
+              this.startTimer();
+            });
+          });
         }
       );
 
       this.intervalSubscription = interval(60000).subscribe(() =>
         this.assessmentService.saveStatus(this.statusObject).subscribe({
-          next: () => console.log('Status saved successfully'),
-          error: (err) => console.error('Error saving status:', err),
+          next: () => console.log("Status saved successfully"),
+          error: (e) => console.error("Error saving status:", e)
         })
       );
     }
-  }
-
-  initializeTest(status, name, email, phone, assessmentCode): void {
-    this.statusObject = status;
-    this.statusObject.testStatus = this.statusObject.testStatus ?? false; // Ensure testStatus is initialized
-    this.questions = status.questionnos;
-    this.totalQuestions = this.questions.length;
-
-    this.answeredQuestions = this.questions.map((_, index) => {
-      if (!this.statusObject.answers[index]) {
-        this.statusObject.answers[index] = [];
-      }
-      return this.statusObject.answers[index].length > 0;
-    });
-
-    this.timer = this.statusObject.duration * 60 - this.statusObject.currentDuration * 60;
-    this.startTimer();
-  }
-
-  fetchOriginalQuestions(name, email, phone, assessmentCode): void {
-    this.assessmentService.getOriginalQuestions(assessmentCode).subscribe((questions) => {
-      this.assessmentService.getTestDetails(assessmentCode).subscribe((details) => {
-        this.questions = questions;
-        this.totalQuestions = questions.length;
-
-        this.answeredQuestions = Array(questions.length).fill(false);
-        this.statusObject = {
-          name,
-          email,
-          phone,
-          assessmentcode: assessmentCode,
-          questionnos: questions,
-          answers: Array(questions.length).fill([]),
-          duration: details.duration,
-          currentDuration: 0,
-          testStatus: false, // Default status for a fresh test
-        };
-        this.timer = details.duration * 60;
-        this.startTimer();
-      });
-    });
   }
 
   saveAnswer(option: string): void {
@@ -153,24 +144,30 @@ export class TestComponent implements OnInit, OnDestroy {
       this.statusObject.answers[this.currentQuestionIndex] = [];
     }
 
-    if (question.type === 'single') {
+    if (question.type === "single") {
+      // For radio buttons, clear all previous answers and set the new one
       this.statusObject.answers[this.currentQuestionIndex] = [answerLetter];
-    } else if (question.type === 'multiple') {
+    } else if (question.type === "multiple") {
+      // For checkboxes, toggle the selected answer
       const currentAnswers = this.statusObject.answers[this.currentQuestionIndex];
       const answerIndex = currentAnswers.indexOf(answerLetter);
 
       if (answerIndex > -1) {
+        // Remove the selected answer if it's already chosen
         currentAnswers.splice(answerIndex, 1);
       } else {
+        // Add the new selection
         currentAnswers.push(answerLetter);
       }
+
+      this.statusObject.answers[this.currentQuestionIndex] = currentAnswers;
     }
 
     this.answeredQuestions[this.currentQuestionIndex] = true;
 
     this.assessmentService.saveStatus(this.statusObject).subscribe({
-      next: () => console.log('Answer saved successfully'),
-      error: (err) => console.error('Error saving answer:', err),
+      next: () => console.log("Answer saved successfully after answering"),
+      error: (e) => console.error("Error saving answer:", e)
     });
   }
 
@@ -181,9 +178,9 @@ export class TestComponent implements OnInit, OnDestroy {
 
     const selectedAnswers = this.statusObject.answers[this.currentQuestionIndex] || [];
 
-    if (question.type === 'single') {
+    if (question.type === "single") {
       return selectedAnswers.length > 0 && selectedAnswers[0] === answerLetter;
-    } else if (question.type === 'multiple') {
+    } else if (question.type === "multiple") {
       return selectedAnswers.includes(answerLetter);
     }
 
@@ -206,6 +203,59 @@ export class TestComponent implements OnInit, OnDestroy {
     }
   }
 
+  submitTest(): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: "400px",
+      data: { message: "Are you sure you want to submit the test?" }
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.statusObject.testStatus = true;
+        this.finishTest();
+      }
+    });
+  }
+
+  @HostListener("document:visibilitychange", ["$event"])
+  handleVisibilityChange(event: Event): void {
+    if (this.testStarted && !this.testAlreadyCompleted && !this.testCompleted && !this.testLocked) {
+      if (document.hidden) {
+        this.statusObject.testStatus = "locked";
+        this.assessmentService.saveStatus(this.statusObject).subscribe({
+          next: () => console.log("Test locked successfully after visibility change"),
+          error: (e) => console.error("Error locking test:", e)
+        });
+        this.testLocked = true;
+        alert("You tried to switch tab or minimize window, your test is going to be locked");
+      }
+    }
+  }
+
+  finishTest(): void {
+    this.testCompleted = true;
+    if (this.intervalSubscription) {
+      this.intervalSubscription.unsubscribe();
+    }
+    clearInterval(this.timerInterval);
+
+    this.assessmentService.saveStatus(this.statusObject).subscribe({
+      next: () => {
+        this.assessmentService.evaluateTest(this.statusObject.email, this.statusObject.assessmentcode).subscribe({
+          next: (response) => {
+            this.router.navigate(["/confirmation"]);
+          },
+          error: (e) => {
+            alert("An error occurred while evaluating your test. Please try again.");
+          }
+        });
+      },
+      error: (e) => {
+        alert("An error occurred while saving your status. Please try again.");
+      }
+    });
+  }
+
   startTimer(): void {
     this.timerInterval = setInterval(() => {
       if (this.timer > 0) {
@@ -215,48 +265,23 @@ export class TestComponent implements OnInit, OnDestroy {
         clearInterval(this.timerInterval);
         this.finishTest();
       }
-    }, 1000);
-  }
 
-  submitTest(): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: { message: 'Are you sure you want to submit the test?' },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.finishTest();
+      if (this.timer === 120) {
+        alert("Only 2 minutes remaining!");
       }
-    });
-  }
-
-  finishTest(): void {
-    this.testCompleted = true;
-    this.statusObject.testStatus = true; // Mark test as completed
-    this.assessmentService.submitTest(this.statusObject).subscribe(() => {
-      this.router.navigate(['/confirmation']);
-    });
-  }
-
-  @HostListener('document:visibilitychange', ['$event'])
-  handleVisibilityChange(): void {
-    if (this.testStarted && !this.testAlreadyCompleted && !this.testCompleted && !this.testLocked) {
-      if (document.hidden) {
-        this.statusObject.testStatus = 'locked';
-        this.assessmentService.saveStatus(this.statusObject).subscribe({
-          next: () => console.log('Test locked successfully'),
-          error: (err) => console.error('Error locking test:', err),
-        });
-        this.testLocked = true;
-        alert('You switched tabs or minimized the window. Your test is now locked.');
+      if (this.timer === 30) {
+        alert("Last 30 seconds");
       }
-    }
+    }, 990);
   }
 
   escapeHTMLTags(content: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(
-      content.replace(/<\/?(?!br)([^>]+)>/gi, '').replace(/\n/g, '<br>')
-    );
+    const sanitizedContent = content
+      .replace(/<\/?(?!br)([^>]+)>/gi, (match) =>
+        match.replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      ) // Escape all HTML tags except <br>
+      .replace(/\n/g, "<br>"); // Convert newlines to <br>
+
+    return this.sanitizer.bypassSecurityTrustHtml(sanitizedContent); // Safely bind HTML
   }
 }

@@ -34,7 +34,7 @@
   </div>
 
   <!-- Show the test questions once the test starts -->
-  <div *ngIf="testStarted && !testCompleted && !testAlreadyCompleted && !testLocked &&!testExpired">
+  <div *ngIf="testStarted && !testCompleted && !testAlreadyCompleted && !testLocked && !testExpired">
     <!-- Question Navigation Grid -->
     <div class="question-navigation">
       <div 
@@ -52,25 +52,38 @@
     <div class="timer">Time Left: {{ timer | minutesSeconds }}</div>
     <div class="progress">Question {{ currentQuestionIndex + 1 }}/{{ totalQuestions }}</div>
 
+    <!-- Question Container -->
     <div *ngIf="questions.length > 0" class="question-container">
       <!-- Render question with escaped HTML and newline converted to <br> -->
-      <h3 [innerHTML]="escapeHTMLTags(questions[currentQuestionIndex].question)" class="question-text"></h3>
+      <h3 [innerHTML]="escapeHTMLTags(questions[currentQuestionIndex]?.question)" class="question-text"></h3>
 
-      <!-- Render options with escaped HTML and newline converted to <br> -->
-      <div *ngFor="let option of questions[currentQuestionIndex].options" class="option-container">
+      <!-- Render options -->
+      <div *ngFor="let option of questions[currentQuestionIndex]?.options" class="option-container">
         <div class="option">
-          <input [type]="questions[currentQuestionIndex].type === 'single' ? 'radio' : 'checkbox'"
-                 [name]="questions[currentQuestionIndex].questionno"
-                 [checked]="isOptionSelected(option)"
-                 (click)="saveAnswer(option)">
+          <input 
+            [type]="questions[currentQuestionIndex]?.type === 'single' ? 'radio' : 'checkbox'" 
+            [name]="questions[currentQuestionIndex]?.questionno" 
+            [checked]="isOptionSelected(option)" 
+            (click)="saveAnswer(option)" 
+          />
         </div>
         <label [innerHTML]="escapeHTMLTags(option)"></label>
       </div>
 
-      <!-- Navigation -->
+      <!-- Navigation Buttons -->
       <div class="navigation-buttons">
-        <button (click)="previousQuestion()" [disabled]="currentQuestionIndex === 0">Previous</button>
-        <button (click)="nextQuestion()" [disabled]="currentQuestionIndex === totalQuestions - 1">Next</button>
+        <button 
+          (click)="previousQuestion()" 
+          [disabled]="currentQuestionIndex === 0"
+        >
+          Previous
+        </button>
+        <button 
+          (click)="nextQuestion()" 
+          [disabled]="currentQuestionIndex === totalQuestions - 1"
+        >
+          Next
+        </button>
       </div>
 
       <!-- Submit Button -->
@@ -85,16 +98,19 @@
     <h4>Test Submitted Successfully!</h4>
     <p>Thank you for completing the test. Your responses have been recorded.</p>
   </div>
+
   <div *ngIf="testAlreadyCompleted" class="completion-message">
     <h4>You have already completed this test.</h4>
     <p>Your responses have been recorded, and you cannot retake this test.</p>
   </div>
+
   <div *ngIf="testLocked" class="completion-message">
-    <h4>Your test has been locked as you attempted switching tabs</h4>
-    <p>Contact Team to unlock the test if the switch was not intentional.</p>
+    <h4>Your test has been locked as you attempted switching tabs.</h4>
+    <p>Contact the team to unlock the test if the switch was not intentional.</p>
   </div>
+
   <div *ngIf="testExpired" class="completion-message">
     <h4>This Test has already Expired</h4>
-    <p>Contact Team for More details</p>
+    <p>Contact the team for more details.</p>
   </div>
 </div>

@@ -138,20 +138,21 @@ export class TestComponent implements OnInit, OnDestroy {
   saveAnswer(option: string): void {
     const question = this.questions[this.currentQuestionIndex];
     const optionIndex = question.options.indexOf(option);
-    const answerLetter = String.fromCharCode(65 + optionIndex);
-
+    const answerLetter = String.fromCharCode(65 + optionIndex); // Convert option index to letter (A, B, C, ...)
+  
+    // Ensure the answers array exists for the current question
     if (!this.statusObject.answers[this.currentQuestionIndex]) {
       this.statusObject.answers[this.currentQuestionIndex] = [];
     }
-
-    if (question.type === "single") {
-      // For radio buttons, clear all previous answers and set the new one
+  
+    if (question.type === 'single') {
+      // For radio buttons, overwrite the current answer with the new selection
       this.statusObject.answers[this.currentQuestionIndex] = [answerLetter];
-    } else if (question.type === "multiple") {
+    } else if (question.type === 'multiple') {
       // For checkboxes, toggle the selected answer
       const currentAnswers = this.statusObject.answers[this.currentQuestionIndex];
       const answerIndex = currentAnswers.indexOf(answerLetter);
-
+  
       if (answerIndex > -1) {
         // Remove the selected answer if it's already chosen
         currentAnswers.splice(answerIndex, 1);
@@ -159,18 +160,21 @@ export class TestComponent implements OnInit, OnDestroy {
         // Add the new selection
         currentAnswers.push(answerLetter);
       }
-
+  
+      // Update the answers array
       this.statusObject.answers[this.currentQuestionIndex] = currentAnswers;
     }
-
-    this.answeredQuestions[this.currentQuestionIndex] = true;
-
+  
+    // Mark the question as answered
+    this.answeredQuestions[this.currentQuestionIndex] = this.statusObject.answers[this.currentQuestionIndex].length > 0;
+  
+    // Save the updated status to the server
     this.assessmentService.saveStatus(this.statusObject).subscribe({
-      next: () => console.log("Answer saved successfully after answering"),
+      next: () => console.log("Answer saved successfully"),
       error: (e) => console.error("Error saving answer:", e)
     });
   }
-
+  
   isOptionSelected(option: string): boolean {
     const question = this.questions[this.currentQuestionIndex];
     const optionIndex = question.options.indexOf(option);

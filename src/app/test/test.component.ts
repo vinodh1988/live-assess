@@ -96,7 +96,7 @@ export class TestComponent implements OnInit, OnDestroy {
 
       this.intervalSubscription = interval(60000).subscribe(() =>
         this.assessmentService.saveStatus(this.statusObject).subscribe({
-          next: () => console.log('Status saved periodically'),
+          next: () => console.log('Status saved successfully'),
           error: (err) => console.error('Error saving status:', err),
         })
       );

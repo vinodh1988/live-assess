@@ -95,7 +95,10 @@ export class TestComponent implements OnInit, OnDestroy {
       );
 
       this.intervalSubscription = interval(60000).subscribe(() =>
-        this.assessmentService.saveStatus(this.statusObject).subscribe()
+        this.assessmentService.saveStatus(this.statusObject).subscribe({
+          next: () => console.log('Status saved periodically'),
+          error: (err) => console.error('Error saving status:', err),
+        })
       );
     }
   }
@@ -163,7 +166,10 @@ export class TestComponent implements OnInit, OnDestroy {
 
     this.answeredQuestions[this.currentQuestionIndex] = true;
 
-    this.assessmentService.saveStatus(this.statusObject).subscribe();
+    this.assessmentService.saveStatus(this.statusObject).subscribe({
+      next: () => console.log('Answer saved successfully'),
+      error: (err) => console.error('Error saving answer:', err),
+    });
   }
 
   isOptionSelected(option: string): boolean {
@@ -235,7 +241,10 @@ export class TestComponent implements OnInit, OnDestroy {
     if (this.testStarted && !this.testAlreadyCompleted && !this.testCompleted && !this.testLocked) {
       if (document.hidden) {
         this.statusObject.testStatus = 'locked';
-        this.assessmentService.saveStatus(this.statusObject).subscribe();
+        this.assessmentService.saveStatus(this.statusObject).subscribe({
+          next: () => console.log('Test locked successfully'),
+          error: (err) => console.error('Error locking test:', err),
+        });
         this.testLocked = true;
         alert('You switched tabs or minimized the window. Your test is now locked.');
       }

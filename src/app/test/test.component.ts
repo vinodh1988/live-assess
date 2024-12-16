@@ -168,6 +168,9 @@ export class TestComponent implements OnInit, OnDestroy {
     // Mark the question as answered
     this.answeredQuestions[this.currentQuestionIndex] = this.statusObject.answers[this.currentQuestionIndex].length > 0;
   
+    console.log('Current Question Index:', this.currentQuestionIndex);
+    console.log('Answers for Current Question:', this.statusObject.answers[this.currentQuestionIndex]);
+    console.log('Answered Questions Array:', this.answeredQuestions);
     // Save the updated status to the server
     this.assessmentService.saveStatus(this.statusObject).subscribe({
       next: () => console.log("Answer saved successfully"),

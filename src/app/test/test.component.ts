@@ -105,6 +105,7 @@ export class TestComponent implements OnInit, OnDestroy {
 
   initializeTest(status, name, email, phone, assessmentCode): void {
     this.statusObject = status;
+    this.statusObject.testStatus = this.statusObject.testStatus ?? false; // Ensure testStatus is initialized
     this.questions = status.questionnos;
     this.totalQuestions = this.questions.length;
 
@@ -135,6 +136,7 @@ export class TestComponent implements OnInit, OnDestroy {
           answers: Array(questions.length).fill([]),
           duration: details.duration,
           currentDuration: 0,
+          testStatus: false, // Default status for a fresh test
         };
         this.timer = details.duration * 60;
         this.startTimer();
@@ -231,6 +233,7 @@ export class TestComponent implements OnInit, OnDestroy {
 
   finishTest(): void {
     this.testCompleted = true;
+    this.statusObject.testStatus = true; // Mark test as completed
     this.assessmentService.submitTest(this.statusObject).subscribe(() => {
       this.router.navigate(['/confirmation']);
     });

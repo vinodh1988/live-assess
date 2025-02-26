@@ -1,0 +1,212 @@
+/* Container styling for the entire test component */
+.test-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+}
+
+/* Heading styles */
+h2, h3 {
+  text-align: left;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+/* Form Element Styling */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+label {
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+button {
+  background-color: #28a745;
+  color: white;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+button:hover {
+  background-color: #218838;
+}
+
+/* Error message styling */
+small {
+  color: red;
+  font-size: 12px;
+}
+
+/* Question Navigation Grid */
+.question-navigation {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+  gap: 8px;
+  margin-bottom: 20px;
+  justify-items: center;
+}
+
+.question-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background-color: #ddd;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+/* Answered and Unanswered Styles */
+.answered {
+  background-color: #28a745;
+  color: white;
+}
+
+.unanswered {
+  background-color: #ffc107;
+  color: black;
+}
+
+/* Timer and progress styles */
+.timer, .progress {
+  text-align: center;
+  font-size: 18px;
+  margin: 15px 0;
+  font-weight: bold;
+}
+
+.timer {
+  color: #ff0000;
+}
+
+/* Question styling */
+.question-container {
+  margin-bottom: 30px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.option-container {
+  text-align: left;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.option-container .option {
+  margin-right: 5px; 
+ 
+  width: 5%;
+  float: left;
+}
+
+.option-container label {
+  
+  float: left;
+  margin-left: 15px;
+  width:90%
+}
+
+
+
+label {
+  font-size: 16px;
+  color: #555;
+ 
+}
+
+/* Navigation buttons for Previous, Next */
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Submit button container */
+.submit-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.submit-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 14px 28px;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #0056b3;
+}
+
+.completion-message  {
+  text-align: center;
+  color: rgb(39, 39, 88);
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .test-container {
+    padding: 20px;
+  }
+
+  .question-nav-item {
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .submit-btn {
+    font-size: 16px;
+    padding: 10px 20px;
+  }
+  .option-container .option {
+    margin-right: 5px; 
+   
+    width: 5%;
+    float: left;
+  }
+  
+  .option-container label {
+    
+    float: left;
+    margin-left: 15px;
+    width:87%;
+  }
+}

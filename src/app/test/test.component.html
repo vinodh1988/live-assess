@@ -1,0 +1,116 @@
+<div class="test-container">
+  <h2>{{ assessmentDetails?.assessmentName || 'Online Test' }}</h2>
+
+  <!-- Show the personal details form if test hasn't started yet and not completed -->
+  <div *ngIf="!testStarted && !testCompleted && !testExpired">
+    <h3>Please enter your details to start the test</h3>
+    <form [formGroup]="personalDetailsForm" (ngSubmit)="startTest()">
+      <!-- Name Field -->
+      <label for="name">Name</label>
+      <input id="name" formControlName="name" placeholder="Enter your name" />
+      <div *ngIf="submitted && personalDetailsForm.controls['name'].errors">
+        <small *ngIf="personalDetailsForm.controls['name'].errors['required']">Name is required</small>
+      </div>
+
+      <!-- Email Field -->
+      <label for="email">Email</label>
+      <input id="email" formControlName="email" placeholder="Enter your email" />
+      <div *ngIf="submitted && personalDetailsForm.controls['email'].errors">
+        <small *ngIf="personalDetailsForm.controls['email'].errors['required']">Email is required</small>
+        <small *ngIf="personalDetailsForm.controls['email'].errors['email']">Invalid email format</small>
+      </div>
+
+      <!-- Phone Field -->
+      <label for="phone">Phone</label>
+      <input id="phone" formControlName="phone" placeholder="Enter your phone number" />
+      <div *ngIf="submitted && personalDetailsForm.controls['phone'].errors">
+        <small *ngIf="personalDetailsForm.controls['phone'].errors['required']">Phone is required</small>
+        <small *ngIf="personalDetailsForm.controls['phone'].errors['pattern']">Invalid phone number</small>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit">Start Test</button>
+    </form>
+  </div>
+
+  <!-- Show the test questions once the test starts -->
+  <div *ngIf="testStarted && !testCompleted && !testAlreadyCompleted && !testLocked && !testExpired">
+    <!-- Question Navigation Grid -->
+    <div class="question-navigation">
+      <div 
+        *ngFor="let question of questions; let i = index" 
+        class="question-nav-item"
+        [class.answered]="answeredQuestions[i]"
+        [class.unanswered]="!answeredQuestions[i]"
+        (click)="navigateToQuestion(i)"
+      >
+        {{ i + 1 }}
+      </div>
+    </div>
+
+    <!-- Timer and Progress -->
+    <div class="timer">Time Left: {{ timer | minutesSeconds }}</div>
+    <div class="progress">Question {{ currentQuestionIndex + 1 }}/{{ totalQuestions }}</div>
+
+    <!-- Question Container -->
+    <div *ngIf="questions.length > 0" class="question-container">
+      <!-- Render question with escaped HTML and newline converted to <br> -->
+      <h3 [innerHTML]="escapeHTMLTags(questions[currentQuestionIndex]?.question)" class="question-text"></h3>
+
+      <!-- Render options -->
+      <div *ngFor="let option of questions[currentQuestionIndex]?.options" class="option-container">
+        <div class="option">
+          <input 
+            [type]="questions[currentQuestionIndex]?.type === 'single' ? 'radio' : 'checkbox'" 
+            [name]="questions[currentQuestionIndex]?.questionno" 
+            [checked]="isOptionSelected(option)" 
+            (click)="saveAnswer(option)" 
+          />
+        </div>
+        <label [innerHTML]="escapeHTMLTags(option)"></label>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="navigation-buttons">
+        <button 
+          (click)="previousQuestion()" 
+          [disabled]="currentQuestionIndex === 0"
+        >
+          Previous
+        </button>
+        <button 
+          (click)="nextQuestion()" 
+          [disabled]="currentQuestionIndex === totalQuestions - 1"
+        >
+          Next
+        </button>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="submit-container">
+        <button class="submit-btn" (click)="submitTest()">Submit Test</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Display Test Completion Message -->
+  <div *ngIf="testCompleted" class="completion-message">
+    <h4>Test Submitted Successfully!</h4>
+    <p>Thank you for completing the test. Your responses have been recorded.</p>
+  </div>
+
+  <div *ngIf="testAlreadyCompleted" class="completion-message">
+    <h4>You have already completed this test.</h4>
+    <p>Your responses have been recorded, and you cannot retake this test.</p>
+  </div>
+
+  <div *ngIf="testLocked" class="completion-message">
+    <h4>Your test has been locked as you attempted switching tabs.</h4>
+    <p>Contact the team to unlock the test if the switch was not intentional.</p>
+  </div>
+
+  <div *ngIf="testExpired" class="completion-message">
+    <h4>This Test has already Expired</h4>
+    <p>Contact the team for more details.</p>
+  </div>
+</div>

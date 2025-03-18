@@ -69,6 +69,7 @@ export class AssignmentUploadComponent {
           console.log('Upload successful:', response);
           this.successMessage = 'Upload successful!';
           this.isLoading = false; // Hide the spinner
+          window.close();
         },
         error: (error) => {
           console.error('Upload failed:', error);

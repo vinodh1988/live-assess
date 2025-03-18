@@ -12,6 +12,8 @@ export class AssignmentUploadComponent {
   uploadForm: FormGroup;
   assignmentCode!: string;
   errorMessage: string | null = null;
+  successMessage: string | null = null;
+  isLoading: boolean = false; // Spinner visibility state
 
   constructor(
     private fb: FormBuilder,
@@ -56,25 +58,31 @@ export class AssignmentUploadComponent {
       formData.append('email', this.uploadForm.get('email')?.value);
       formData.append('assignmentcode', this.assignmentCode);
 
+      // Show the spinner and clear messages
+      this.isLoading = true;
+      this.errorMessage = null;
+      this.successMessage = null;
+
+      // Call the API
       this.assessmentService.uploadAssignment(formData).subscribe({
         next: (response) => {
           console.log('Upload successful:', response);
-          window.close();
-          alert('Upload successful!');
+          this.successMessage = 'Upload successful!';
+          this.isLoading = false; // Hide the spinner
         },
         error: (error) => {
           console.error('Upload failed:', error);
 
-  // Provide specific alerts based on the HTTP status
-  if (error.status === 400) {
-    alert('Upload failed: Check the size of the files.'); // Alert for 400 Bad Request
-  } else if (error.status === 404) {
-    alert('Upload failed: Check the URL.'); // Alert for 404 Not Found
-  } else if (error.status === 500) {
-    alert('Upload failed: Internal Server Error. Please try again later.'); // Alert for 500 Internal Server Error
-  } else {
-    alert('Upload failed: An unexpected error occurred. Please try again.'); // Generic alert for other errors
-  }
+          // Display error messages based on API response status
+          if (error.status === 400) {
+            this.errorMessage = 'Check the size of the files.';
+          } else if (error.status === 404) {
+            this.errorMessage = 'Check the URL.';
+          } else {
+            this.errorMessage = 'An unexpected error occurred. Please try again.';
+          }
+
+          this.isLoading = false; // Hide the spinner
         }
       });
     }

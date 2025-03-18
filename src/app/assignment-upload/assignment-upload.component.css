@@ -118,3 +118,59 @@ form {
     }
   }
   
+  /* Success message container styling */
+.success-message-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100vh;
+    background-color: #f9f9f9;
+  }
+  
+  .success-message-container h2 {
+    color: #28a745; /* Green color for success */
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+  }
+  
+  .success-message-container p {
+    font-size: 1rem;
+    color: #444;
+  }
+  
+  /* Spinner container */
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  /* Spinner animation */
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Error message */
+  .error-message {
+    margin-top: 10px;
+    color: red;
+    font-weight: bold;
+  }
+  

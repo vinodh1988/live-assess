@@ -11,9 +11,9 @@ import { ActivatedRoute } from '@angular/router';
 export class AssignmentUploadComponent {
   uploadForm: FormGroup;
   assignmentCode!: string;
+  isLoading: boolean = false; // Controls spinner visibility
+  uploadSuccess: boolean = false; // Controls success message visibility
   errorMessage: string | null = null;
-  successMessage: string | null = null;
-  isLoading: boolean = false; // Spinner visibility state
 
   constructor(
     private fb: FormBuilder,
@@ -58,23 +58,21 @@ export class AssignmentUploadComponent {
       formData.append('email', this.uploadForm.get('email')?.value);
       formData.append('assignmentcode', this.assignmentCode);
 
-      // Show the spinner and clear messages
+      // Show spinner and reset messages
       this.isLoading = true;
       this.errorMessage = null;
-      this.successMessage = null;
 
       // Call the API
       this.assessmentService.uploadAssignment(formData).subscribe({
-        next: (response) => {
-          console.log('Upload successful:', response);
-          this.successMessage = 'Upload successful!';
-          this.isLoading = false; // Hide the spinner
-          window.close();
+        next: () => {
+          this.isLoading = false;
+          this.uploadSuccess = true; // Show success message
         },
         error: (error) => {
-          console.error('Upload failed:', error);
+          this.isLoading = false;
+          this.uploadSuccess = false;
 
-          // Display error messages based on API response status
+          // Handle errors
           if (error.status === 400) {
             this.errorMessage = 'Check the size of the files.';
           } else if (error.status === 404) {
@@ -82,8 +80,6 @@ export class AssignmentUploadComponent {
           } else {
             this.errorMessage = 'An unexpected error occurred. Please try again.';
           }
-
-          this.isLoading = false; // Hide the spinner
         }
       });
     }

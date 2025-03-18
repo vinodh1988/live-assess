@@ -2,7 +2,7 @@
     <div class="spinner"></div>
   </div>
   
-  <div *ngIf="!isLoading">
+  <div *ngIf="!isLoading && !uploadSuccess">
     <h2>Assignment Upload</h2>
     <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()">
       <label>
@@ -38,13 +38,12 @@
   
       <button type="submit" [disabled]="uploadForm.invalid">Submit</button>
     </form>
+    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+  </div>
   
-    <!-- Display success or error messages dynamically -->
-    <div *ngIf="successMessage" class="success-message">
-      {{ successMessage }}
-    </div>
-    <div *ngIf="errorMessage" class="error-message">
-      {{ errorMessage }}
-    </div>
+  <!-- Success Message -->
+  <div *ngIf="uploadSuccess" class="success-message-container">
+    <h2>Your files have been uploaded successfully!</h2>
+    <p>Thank you for submitting your assignment.</p>
   </div>
   

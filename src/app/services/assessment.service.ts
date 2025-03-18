@@ -51,4 +51,8 @@ export class AssessmentService {
   }
 
 
+  uploadAssignment(formData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/project-uploads`, formData,this.getHeaders());
+  }
+
 }

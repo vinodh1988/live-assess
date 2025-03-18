@@ -1,0 +1,38 @@
+<h2>Assignment Upload</h2>
+<form [formGroup]="uploadForm" (ngSubmit)="onSubmit()">
+  <label>
+    Name:
+    <input formControlName="name" type="text" />
+  </label>
+  <div *ngIf="uploadForm.get('name')?.invalid && uploadForm.get('name')?.touched">
+    Name is required.
+  </div>
+
+  <label>
+    Email:
+    <input formControlName="email" type="email" />
+  </label>
+  <div *ngIf="uploadForm.get('email')?.invalid && uploadForm.get('email')?.touched">
+    Enter a valid email.
+  </div>
+
+  <label>
+    Source Code (ZIP, Max 100KB):
+    <input type="file" (change)="onFileChange($event, 'src', 102400)" />
+  </label>
+  <div *ngIf="errorMessage && !uploadForm.get('src')?.value">{{ errorMessage }}</div>
+
+  <label>
+    Presentation (PDF, Max 15MB):
+    <input type="file" (change)="onFileChange($event, 'presentation', 15728640)" />
+  </label>
+  <div *ngIf="errorMessage && !uploadForm.get('presentation')?.value">{{ errorMessage }}</div>
+
+  <label>
+    Screenshots (ZIP, Max 30MB):
+    <input type="file" (change)="onFileChange($event, 'screenshots', 31457280)" />
+  </label>
+  <div *ngIf="errorMessage && !uploadForm.get('screenshots')?.value">{{ errorMessage }}</div>
+
+  <button type="submit" [disabled]="uploadForm.invalid">Submit</button>
+</form>

@@ -14,6 +14,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ErrorHandlerService } from './interceptors/error-handler.service';
 import { NoAssessmentFoundComponent } from './no-assessment-found/no-assessment-found.component';
+import { AssignmentUploadComponent } from './assignment-upload/assignment-upload.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { NoAssessmentFoundComponent } from './no-assessment-found/no-assessment-
     TestComponent,
     MinutesSecondsPipe,
     ConfirmDialogComponent,
-    NoAssessmentFoundComponent
+    NoAssessmentFoundComponent,
+    AssignmentUploadComponent
   ],
   imports: [
     BrowserModule,

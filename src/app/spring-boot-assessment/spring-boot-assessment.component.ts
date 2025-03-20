@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import * as pdfjsLib from 'pdfjs-dist';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import * as pdfjsLib from 'pdfjs-dist';
 import { AssessmentService } from '../services/assessment.service';
 
 @Component({
@@ -19,7 +19,7 @@ export class SpringBootAssessmentComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private assessmentService: AssessmentService
+    private assessmentService:AssessmentService
   ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
@@ -59,7 +59,7 @@ export class SpringBootAssessmentComponent implements OnInit {
     const loadingTask = pdfjsLib.getDocument(url);
     loadingTask.promise.then((pdf) => {
       const viewer = document.getElementById('pdfViewer')!;
-      viewer.innerHTML = ''; // Clear previous PDF content
+      viewer.innerHTML = ''; // Clear previous content
       pdf.getPage(1).then((page) => {
         const viewport = page.getViewport({ scale: 1.5 });
         const canvas = document.createElement('canvas');

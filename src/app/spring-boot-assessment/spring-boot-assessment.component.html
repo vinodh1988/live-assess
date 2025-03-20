@@ -1,4 +1,24 @@
-<div *ngIf="showDetails">
+<div *ngIf="!showDetails">
+    <!-- Form Section -->
+    <h1>Start Your Assessment</h1>
+    <form [formGroup]="form" (ngSubmit)="startTest()">
+      <div>
+        <label for="name">Name:</label>
+        <input id="name" formControlName="name" />
+      </div>
+      <div>
+        <label for="email">Email:</label>
+        <input id="email" formControlName="email" />
+      </div>
+      <div>
+        <label for="phone">Phone:</label>
+        <input id="phone" formControlName="phone" />
+      </div>
+      <button type="submit" [disabled]="form.invalid">Start Test</button>
+    </form>
+  </div>
+  
+  <div *ngIf="showDetails">
     <h1>{{ assessmentData.name }}</h1>
     <p>Duration: 120 Minutes</p>
   

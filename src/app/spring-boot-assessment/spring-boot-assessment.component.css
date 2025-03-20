@@ -77,10 +77,11 @@ h1 {
     float: right;
   }
   
-  /* Style the Object Tag */
-  object {
+  /* Style PDF Viewer */
+  #pdfViewer {
     border: 1px solid #ddd;
     border-radius: 5px;
     margin-top: 15px;
+    background: #f9f9f9;
   }
   

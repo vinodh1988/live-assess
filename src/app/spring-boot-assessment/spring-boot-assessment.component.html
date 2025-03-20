@@ -29,12 +29,13 @@
       </button>
     </div>
   
-    <!-- IFrame Section -->
-    <iframe
+    <!-- Embed Section -->
+    <embed
       [src]="pdfUrl | safeUrl"
       width="100%"
       height="500px"
-      style="margin-top: 20px"
-    ></iframe>
+      type="application/pdf"
+      style="margin-top: 20px; border: 1px solid #ddd; border-radius: 5px;"
+    />
   </div>
   

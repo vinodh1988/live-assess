@@ -56,6 +56,6 @@ export class AssessmentService {
   }
 
   getAssessmentDetails(assessmentcode: string, email: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/spring-assessment-details/${assessmentcode}?email=${email}`);
+    return this.http.get(`${this.apiUrl}/spring-assessment-details/${assessmentcode}?email=${email}`,this.getHeaders());
   }
 }

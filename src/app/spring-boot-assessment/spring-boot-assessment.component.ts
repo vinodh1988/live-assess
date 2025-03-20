@@ -14,6 +14,7 @@ export class SpringBootAssessmentComponent implements OnInit {
   assessmentData: any;
   pdfUrl: string = '';
   buttonText = 'Submission Instructions';
+  showDetails = false; // Flag to toggle visibility of details
 
   constructor(
     private fb: FormBuilder,
@@ -27,17 +28,19 @@ export class SpringBootAssessmentComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    const assessmentcode = this.route.snapshot.paramMap.get('assessmentcode')!;
-    this.fetchAssessmentDetails(assessmentcode);
-  }
+  ngOnInit(): void {}
 
-  fetchAssessmentDetails(assessmentcode: string): void {
-    const email = this.form.get('email')?.value || 'default-email@example.com'; // Replace with actual logic if needed
-    this.assessmentService.getAssessmentDetails(assessmentcode, email).subscribe((data) => {
-      this.assessmentData = data;
-      this.pdfUrl = `http://13.90.102.109:5000/spring-boot-files/${this.assessmentData.questioname}`;
-    });
+  startTest(): void {
+    if (this.form.valid) {
+      const assessmentcode = this.route.snapshot.paramMap.get('assessmentcode')!;
+      const email = this.form.get('email')?.value;
+
+      this.assessmentService.getAssessmentDetails(assessmentcode, email).subscribe((data) => {
+        this.assessmentData = data;
+        this.pdfUrl = `http://13.90.102.109:5000/spring-boot-files/${this.assessmentData.questioname}`;
+        this.showDetails = true; // Show buttons and PDFs
+      });
+    }
   }
 
   toggleInstructions(): void {
@@ -47,12 +50,6 @@ export class SpringBootAssessmentComponent implements OnInit {
     } else {
       this.buttonText = 'Submission Instructions';
       this.pdfUrl = `http://13.90.102.109:5000/spring-boot-files/${this.assessmentData.questioname}`;
-    }
-  }
-
-  startTest(): void {
-    if (this.form.valid) {
-      console.log('Form Data:', this.form.value);
     }
   }
 }

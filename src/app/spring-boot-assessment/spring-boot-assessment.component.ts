@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import * as pdfjsLib from 'pdfjs-dist';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AssessmentService } from '../services/assessment.service';
-
 
 @Component({
   selector: 'app-spring-boot-assessment',
@@ -14,7 +14,7 @@ export class SpringBootAssessmentComponent implements OnInit {
   assessmentData: any;
   pdfUrl: string = '';
   buttonText = 'Submission Instructions';
-  showDetails = false; // Flag to toggle visibility of details
+  showDetails = false;
 
   constructor(
     private fb: FormBuilder,
@@ -38,7 +38,8 @@ export class SpringBootAssessmentComponent implements OnInit {
       this.assessmentService.getAssessmentDetails(assessmentcode, email).subscribe((data) => {
         this.assessmentData = data;
         this.pdfUrl = `http://13.90.102.109:5000/spring-boot-files/${this.assessmentData.questioname}`;
-        this.showDetails = true; // Show buttons and PDFs
+        this.showDetails = true;
+        this.renderPDF(this.pdfUrl);
       });
     }
   }
@@ -51,5 +52,28 @@ export class SpringBootAssessmentComponent implements OnInit {
       this.buttonText = 'Submission Instructions';
       this.pdfUrl = `http://13.90.102.109:5000/spring-boot-files/${this.assessmentData.questioname}`;
     }
+    this.renderPDF(this.pdfUrl);
+  }
+
+  renderPDF(url: string): void {
+    const loadingTask = pdfjsLib.getDocument(url);
+    loadingTask.promise.then((pdf) => {
+      const viewer = document.getElementById('pdfViewer')!;
+      viewer.innerHTML = ''; // Clear previous PDF content
+      pdf.getPage(1).then((page) => {
+        const viewport = page.getViewport({ scale: 1.5 });
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d')!;
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        viewer.appendChild(canvas);
+
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport,
+        };
+        page.render(renderContext);
+      });
+    });
   }
 }

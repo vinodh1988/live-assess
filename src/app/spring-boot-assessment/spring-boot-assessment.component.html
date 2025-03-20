@@ -1,25 +1,4 @@
-<div *ngIf="!showDetails">
-    <!-- Form Section -->
-    <h1>Start Your Assessment</h1>
-    <form [formGroup]="form" (ngSubmit)="startTest()">
-      <div>
-        <label for="name">Name:</label>
-        <input id="name" formControlName="name" />
-      </div>
-      <div>
-        <label for="email">Email:</label>
-        <input id="email" formControlName="email" />
-      </div>
-      <div>
-        <label for="phone">Phone:</label>
-        <input id="phone" formControlName="phone" />
-      </div>
-      <button type="submit" [disabled]="form.invalid">Start Test</button>
-    </form>
-  </div>
-  
-  <div *ngIf="showDetails">
-    <!-- Top Section -->
+<div *ngIf="showDetails">
     <h1>{{ assessmentData.name }}</h1>
     <p>Duration: 120 Minutes</p>
   
@@ -32,17 +11,7 @@
       </button>
     </div>
   
-    <!-- Object Section -->
-    <object
-      [data]="pdfUrl | safeUrl"
-      type="application/pdf"
-      width="100%"
-      height="600px"
-      style="margin-top: 20px; border: 1px solid #ddd; border-radius: 5px;"
-    >
-      <p>Your browser does not support PDFs. Please download the PDF to view it:
-        <a [href]="pdfUrl" target="_blank">Download PDF</a>
-      </p>
-    </object>
+    <!-- PDF Viewer -->
+    <div id="pdfViewer" style="width: 100%; height: 600px; border: 1px solid #ddd;"></div>
   </div>
   

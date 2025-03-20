@@ -3,11 +3,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { TestComponent } from './test/test.component';
 import { NoAssessmentFoundComponent } from './no-assessment-found/no-assessment-found.component';
 import { AssignmentUploadComponent } from './assignment-upload/assignment-upload.component';
+import { SpringBootAssessmentComponent } from './spring-boot-assessment/spring-boot-assessment.component';
 
 const routes: Routes = [
   // The route where both personal details and the test are handled
   { path: 'assessments/:assessmentcode', component: TestComponent },
   { path: 'assignment-upload/:assignmentcode', component: AssignmentUploadComponent },
+  { path: 'spring-boot-assessment/:assessmentcode', component: SpringBootAssessmentComponent },
   { path: 'no-assessment-found', component: NoAssessmentFoundComponent },
   { path: '**', redirectTo: 'no-assessment-found' },
   { path: '**', redirectTo: 'assessments/testcode', pathMatch: 'full' },

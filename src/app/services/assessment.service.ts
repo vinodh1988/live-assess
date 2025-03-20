@@ -55,4 +55,7 @@ export class AssessmentService {
     return this.http.post(`${this.apiUrl}/project-uploads`, formData,this.getHeaders());
   }
 
+  getAssessmentDetails(assessmentcode: string, email: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/spring-assessment-details/${assessmentcode}?email=${email}`);
+  }
 }

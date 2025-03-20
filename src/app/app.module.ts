@@ -15,6 +15,8 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { ErrorHandlerService } from './interceptors/error-handler.service';
 import { NoAssessmentFoundComponent } from './no-assessment-found/no-assessment-found.component';
 import { AssignmentUploadComponent } from './assignment-upload/assignment-upload.component';
+import { SpringBootAssessmentComponent } from './spring-boot-assessment/spring-boot-assessment.component';
+import { SafeurlPipe } from './pipes/safeurl.pipe';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,9 @@ import { AssignmentUploadComponent } from './assignment-upload/assignment-upload
     MinutesSecondsPipe,
     ConfirmDialogComponent,
     NoAssessmentFoundComponent,
-    AssignmentUploadComponent
+    AssignmentUploadComponent,
+    SpringBootAssessmentComponent,
+    SafeurlPipe
   ],
   imports: [
     BrowserModule,

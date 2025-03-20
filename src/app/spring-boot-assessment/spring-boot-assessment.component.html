@@ -1,0 +1,40 @@
+<div *ngIf="assessmentData">
+    <!-- Top Section -->
+    <h1>{{ assessmentData.name }}</h1>
+    <p>Duration: 120 Minutes</p>
+  
+    <!-- Form Section -->
+    <form [formGroup]="form" (ngSubmit)="startTest()">
+      <div>
+        <label for="name">Name:</label>
+        <input id="name" formControlName="name" />
+      </div>
+      <div>
+        <label for="email">Email:</label>
+        <input id="email" formControlName="email" />
+      </div>
+      <div>
+        <label for="phone">Phone:</label>
+        <input id="phone" formControlName="phone" />
+      </div>
+      <button type="submit" [disabled]="form.invalid">Start Test</button>
+    </form>
+  
+    <!-- Buttons Section -->
+    <div>
+      <button (click)="startTest()">Test Run</button>
+      <button>Final Submit</button>
+      <button (click)="toggleInstructions()" style="float: right">
+        {{ buttonText }}
+      </button>
+    </div>
+  
+    <!-- IFrame Section -->
+    <iframe
+      [src]="pdfUrl | safeUrl"
+      width="100%"
+      height="500px"
+      style="margin-top: 20px"
+    ></iframe>
+  </div>
+  

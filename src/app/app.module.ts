@@ -17,6 +17,7 @@ import { NoAssessmentFoundComponent } from './no-assessment-found/no-assessment-
 import { AssignmentUploadComponent } from './assignment-upload/assignment-upload.component';
 import { SpringBootAssessmentComponent } from './spring-boot-assessment/spring-boot-assessment.component';
 import { SafeurlPipe } from './pipes/safeurl.pipe';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { SafeurlPipe } from './pipes/safeurl.pipe';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    MatDialogModule
+    MatDialogModule,
+     NgxExtendedPdfViewerModule
 
   ],
   providers: [

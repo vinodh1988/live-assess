@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import * as pdfjsLib from 'pdfjs-dist';
 import { AssessmentService } from '../services/assessment.service';
+
 
 @Component({
   selector: 'app-spring-boot-assessment',
@@ -19,7 +19,7 @@ export class SpringBootAssessmentComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private assessmentService:AssessmentService
+    private assessmentService: AssessmentService
   ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
@@ -38,8 +38,7 @@ export class SpringBootAssessmentComponent implements OnInit {
       this.assessmentService.getAssessmentDetails(assessmentcode, email).subscribe((data) => {
         this.assessmentData = data;
         this.pdfUrl = `http://13.90.102.109:5000/spring-boot-files/${this.assessmentData.questioname}`;
-        this.showDetails = true;
-        this.renderPDF(this.pdfUrl);
+        this.showDetails = true; // Toggle to show details
       });
     }
   }
@@ -52,28 +51,5 @@ export class SpringBootAssessmentComponent implements OnInit {
       this.buttonText = 'Submission Instructions';
       this.pdfUrl = `http://13.90.102.109:5000/spring-boot-files/${this.assessmentData.questioname}`;
     }
-    this.renderPDF(this.pdfUrl);
-  }
-
-  renderPDF(url: string): void {
-    const loadingTask = pdfjsLib.getDocument(url);
-    loadingTask.promise.then((pdf) => {
-      const viewer = document.getElementById('pdfViewer')!;
-      viewer.innerHTML = ''; // Clear previous content
-      pdf.getPage(1).then((page) => {
-        const viewport = page.getViewport({ scale: 1.5 });
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d')!;
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-        viewer.appendChild(canvas);
-
-        const renderContext = {
-          canvasContext: context,
-          viewport: viewport,
-        };
-        page.render(renderContext);
-      });
-    });
   }
 }

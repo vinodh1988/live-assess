@@ -38,7 +38,7 @@ export class SpringBootAssessmentComponent implements OnInit {
       this.assessmentService.getAssessmentDetails(assessmentcode, email).subscribe((data) => {
         this.assessmentData = data;
         console.log(this.assessmentData)
-        this.pdfUrl = `http://13.90.102.109:5000/spring-boot-files/${this.assessmentData.questioname}`;
+        this.pdfUrl = `http://13.90.102.109:5000/spring-boot-files/${this.assessmentData.questionname}`;
         this.showDetails = true; // Toggle to show details
       });
     }
@@ -50,7 +50,7 @@ export class SpringBootAssessmentComponent implements OnInit {
       this.pdfUrl = `http://13.90.102.109:5000/spring-boot-files/instructions`;
     } else {
       this.buttonText = 'Submission Instructions';
-      this.pdfUrl = `http://13.90.102.109:5000/spring-boot-files/${this.assessmentData.questioname}`;
+      this.pdfUrl = `http://13.90.102.109:5000/spring-boot-files/${this.assessmentData.questionname}`;
     }
   }
 }

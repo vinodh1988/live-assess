@@ -17,6 +17,7 @@ export class TestRunModalComponent {
   processingTimeout: any;
   results: any[] = [];
   score = '';
+  errorMessage = '';
 
   constructor(
     private fb: FormBuilder,
@@ -42,25 +43,33 @@ export class TestRunModalComponent {
   onSubmit(): void {
     if (this.form.valid && this.file) {
       this.isProcessing = true;
-
+  
       const formData = new FormData();
       Object.keys(this.form.value).forEach((key) =>
         formData.append(key, this.form.value[key])
       );
       formData.append('file', this.file);
-
-      this.assessmentService.uploadAssessmentData(formData).subscribe((response) => {
-        clearTimeout(this.processingTimeout);
-        this.isProcessing = false;
-        this.results = response.results;
-        this.score = `${this.results.filter((r: any) => r.status === 'PASSED').length}/${this.results.length}`;
+  
+      this.assessmentService.uploadAssessmentData(formData).subscribe({
+        next: (response) => {
+          clearTimeout(this.processingTimeout);
+          this.isProcessing = false;
+          this.results = response.results;
+          this.score = `${this.results.filter((r: any) => r.status === 'PASSED').length}/${this.results.length}`;
+        },
+        error: (err) => {
+          clearTimeout(this.processingTimeout);
+          this.isProcessing = false;
+          this.errorMessage = 'Submission failed. Please try again later.';
+        }
       });
-
+  
       this.processingTimeout = setTimeout(() => {
         this.isProcessing = false;
-        alert('The process is taking too long. Please try again later.');
+        this.errorMessage = 'The process is taking too long. Please try again later.';
       }, 300000);
     }
+  
   }
 
   onClose(): void {

@@ -1,7 +1,24 @@
 <h2 mat-dialog-title>Test Run</h2>
-<div mat-dialog-content>
+
+<!-- Show Spinner When Processing -->
+<div *ngIf="isProcessing" style="text-align: center; margin-top: 20px;">
+  <mat-progress-spinner
+    mode="indeterminate"
+    diameter="50"
+    color="primary"
+  ></mat-progress-spinner>
+  <p>Processing your code... This might take a few seconds to minutes.</p>
+</div>
+
+<!-- Show Error Message -->
+<div *ngIf="!isProcessing && errorMessage" style="color: red; text-align: center; margin-top: 10px;">
+  {{ errorMessage }}
+</div>
+
+<!-- Hide Form When Processing -->
+<div *ngIf="!isProcessing && !errorMessage">
   <form [formGroup]="form">
-    <div>
+    <div class="form-group">
       <label for="file">Upload File:</label>
       <input
         type="file"
@@ -15,30 +32,32 @@
       Submit
     </button>
   </form>
-  <div *ngIf="isProcessing">
-    <mat-progress-spinner></mat-progress-spinner>
-    <p>Code is being processed. This may take a few seconds to minutes...</p>
-  </div>
-  <div *ngIf="results.length">
-    <table>
-      <thead>
-        <tr>
-          <th>Test Case</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let result of results">
-          <td>{{ result.testCase }}</td>
-          <td [style.color]="result.status === 'PASSED' ? 'green' : 'red'">
-            {{ result.status }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <p>Total Passed: {{ score }}</p>
-  </div>
 </div>
+
+<!-- Display Results -->
+<div *ngIf="results.length">
+  <h3>Test Results</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Test Case</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let result of results">
+        <td>{{ result.testCase }}</td>
+        <td [style.color]="result.status === 'PASSED' ? 'green' : 'red'">
+          {{ result.status }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="margin-top: 10px; font-weight: bold;">
+    Total Passed: {{ score }}
+  </p>
+</div>
+
 <div mat-dialog-actions>
   <button mat-button (click)="onClose()">Close</button>
 </div>

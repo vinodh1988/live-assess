@@ -60,20 +60,21 @@ export class SpringBootAssessmentComponent implements OnInit {
   testRun(){
     const dialogRef = this.dialog.open(TestRunModalComponent, {
       width: '500px',
+      maxHeight: '90vh', // Limit the height to 90% of the viewport
       data: {
         name: this.form.get('name')?.value,
         email: this.form.get('email')?.value,
         questionname: this.assessmentData?.questionname,
         assessmentcode: this.route.snapshot.paramMap.get('assessmentcode')
       },
-      disableClose: true
+      disableClose: true, // Prevent closing on outside click
+      panelClass: 'custom-modal' // Apply custom styling for scrolling
     });
   
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         console.log('Results:', result.results);
         console.log('Score:', result.score);
-        // Handle the results and score logic here
       }
     });
   

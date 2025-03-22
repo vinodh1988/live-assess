@@ -53,3 +53,8 @@ mat-dialog-content {
   tr:nth-child(even) {
     background-color: #f9f9f9; /* Zebra striping for better readability */
   }
+
+  h2{
+    color:#24405f;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  }

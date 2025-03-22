@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AssessmentService } from '../services/assessment.service';
+import { MatDialog } from '@angular/material/dialog';
+import { TestRunModalComponent } from './test-run-modal/test-run-modal.component';
 
 
 @Component({
@@ -19,7 +21,8 @@ export class SpringBootAssessmentComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private assessmentService: AssessmentService
+    private assessmentService: AssessmentService,
+    private dialog: MatDialog
   ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
@@ -52,5 +55,26 @@ export class SpringBootAssessmentComponent implements OnInit {
       this.buttonText = 'Submission Instructions';
       this.pdfUrl = `http://13.90.102.109:5000/spring-boot-files/${this.assessmentData.questionname}`;
     }
+  }
+
+  testRun(){
+    const dialogRef = this.dialog.open(TestRunModalComponent, {
+      width: '500px',
+      data: {
+        name: this.form.get('name')?.value,
+        email: this.form.get('email')?.value,
+        questionname: this.assessmentData?.questionname,
+        assessmentcode: this.route.snapshot.paramMap.get('assessmentcode')
+      }
+    });
+  
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        console.log('Results:', result.results);
+        console.log('Score:', result.score);
+        // Handle the results and score logic here
+      }
+    });
+  
   }
 }

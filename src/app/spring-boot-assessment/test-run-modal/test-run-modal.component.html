@@ -1,0 +1,44 @@
+<h2 mat-dialog-title>Test Run</h2>
+<div mat-dialog-content>
+  <form [formGroup]="form">
+    <div>
+      <label for="file">Upload File:</label>
+      <input
+        type="file"
+        id="file"
+        (change)="onFileSelected($event)"
+        accept=".zip"
+      />
+      <p *ngIf="fileError" style="color: red;">File must be named 'src.zip'</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="onSubmit()">
+      Submit
+    </button>
+  </form>
+  <div *ngIf="isProcessing">
+    <mat-progress-spinner></mat-progress-spinner>
+    <p>Code is being processed. This may take a few seconds to minutes...</p>
+  </div>
+  <div *ngIf="results.length">
+    <table>
+      <thead>
+        <tr>
+          <th>Test Case</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let result of results">
+          <td>{{ result.testCase }}</td>
+          <td [style.color]="result.status === 'PASSED' ? 'green' : 'red'">
+            {{ result.status }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Total Passed: {{ score }}</p>
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onClose()">Close</button>
+</div>

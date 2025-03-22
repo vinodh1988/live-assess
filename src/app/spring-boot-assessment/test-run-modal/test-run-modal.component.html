@@ -7,13 +7,13 @@
     diameter="60"
     color="primary"
   ></mat-progress-spinner>
-  <p style="font-size: 1.2rem; margin-top: 10px;">Processing your code... Please wait.</p>
+  <p style="font-size: 1.2rem; margin-top: 10px;">Processing your code... Please wait...It may few seconds to minutes</p>
 </div>
 
 <!-- Form Section -->
 <div *ngIf="!isProcessing && !errorMessage">
   <form [formGroup]="form" style="width: 100%; max-width: 500px; margin: 0 auto;">
-    <div class="form-group">
+    <div class="form-group" style="margin-top:10px; padding:20px;">
       <label for="file">Upload File:</label>
       <input
         type="file"

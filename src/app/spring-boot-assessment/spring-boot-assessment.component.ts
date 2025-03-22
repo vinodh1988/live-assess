@@ -65,7 +65,8 @@ export class SpringBootAssessmentComponent implements OnInit {
         email: this.form.get('email')?.value,
         questionname: this.assessmentData?.questionname,
         assessmentcode: this.route.snapshot.paramMap.get('assessmentcode')
-      }
+      },
+      disableClose: true
     });
   
     dialogRef.afterClosed().subscribe((result) => {

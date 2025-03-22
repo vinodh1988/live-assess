@@ -17,3 +17,39 @@ table {
   tr:nth-child(even) {
     background-color: #f9f9f9;
   }
+
+  /* Ensure Modal Content is Scrollable */
+mat-dialog-content {
+    max-height: 70vh; /* Limit maximum height to 70% of viewport */
+    overflow-y: auto; /* Add vertical scroll */
+    padding: 20px; /* Add consistent padding for visual appeal */
+  }
+  
+  /* Add Padding and Spacing */
+  .form-group {
+    margin-bottom: 20px; /* Increase spacing between form fields */
+  }
+  
+  table {
+    margin-top: 20px;
+    width: 100%;
+    border-collapse: collapse; /* Remove gaps between table borders */
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 12px; /* Enhance padding for better readability */
+  }
+  
+  th {
+    background-color: #007bff; /* Stylish header */
+    color: white;
+  }
+  
+  td {
+    font-size: 1rem; /* Ensure uniform font size */
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f9f9f9; /* Zebra striping for better readability */
+  }

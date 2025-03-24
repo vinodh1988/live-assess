@@ -43,7 +43,7 @@ export class TestRunModalComponent {
   }
 
   onSubmit(): void {
-    alert("getting called")
+  
     if (this.form.valid && this.file) {
       this.isProcessing = true;
 

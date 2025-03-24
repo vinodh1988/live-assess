@@ -116,9 +116,9 @@ export class SpringBootAssessmentComponent implements OnInit {
         const statusObject = {
           assessmentcode: this.assessmentData.assessmentcode,
           batchname: this.assessmentData.batchname, // Replace with dynamic batch name
-          name: this.assessmentData.name,
-          email: this.assessmentData.email,
-          phone: this.assessmentData.phone,
+          name: this.form.get('name')?.value,
+          email: this.form.get('email')?.value,
+          phone: this.form.get('phone')?.value,
           status: 'completed',
           questionname: this.assessmentData.questionname,
           testresults: this.testresults, // Use the stored test results

@@ -6,7 +6,7 @@
   <!-- Form Section -->
   <div *ngIf="!showDetails" style="text-align: center; padding:20px;" >
     <h1>Start Your Assessment</h1>
-    <form [formGroup]="form" (ngSubmit)="startTest()" style="max-width: 500px; margin: 0 auto;">
+    <form [formGroup]="form" (ngSubmit)="startTest()" style="max-width: 500px; padding:20px; margin: 10px;">
       <div class="form-group">
         <label for="name">Name:</label>
         <input id="name" formControlName="name" />

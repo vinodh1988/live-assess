@@ -27,9 +27,11 @@ export class TestRunModalComponent {
     this.form = this.fb.group({
       name: [data.name, Validators.required],
       email: [data.email, [Validators.required, Validators.email]],
+      phone: [data.phone, [Validators.required, Validators.pattern(/^\d{10}$/)]],
       questionname: [data.questionname, Validators.required],
       assessmentcode: [data.assessmentcode, Validators.required],
-      status: ['ongoing', Validators.required]
+      status: ['ongoing', Validators.required],
+
     });
   }
 

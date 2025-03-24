@@ -5,6 +5,7 @@ import { AssessmentService } from '../services/assessment.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TestRunModalComponent } from './test-run-modal/test-run-modal.component';
 import { FinalSubmitDialogComponent } from './final-submit-dialog/final-submit-dialog.component';
+import { PdfHorizontalScrollComponent } from 'ngx-extended-pdf-viewer';
 
 
 @Component({
@@ -79,6 +80,8 @@ export class SpringBootAssessmentComponent implements OnInit {
       data: {
         name: this.form.get('name')?.value,
         email: this.form.get('email')?.value,
+        Phone: this.form.get('phone')?.value,
+        batchname: this.assessmentData?.batchname,
         questionname: this.assessmentData?.questionname,
         assessmentcode: this.route.snapshot.paramMap.get('assessmentcode')
       },

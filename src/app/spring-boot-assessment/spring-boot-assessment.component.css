@@ -79,6 +79,8 @@ h1 {
     text-align: center;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     color: #373c51;
+    font-weight: bold;
+    font-size: 18px;
   }
   
   /* Style PDF Viewer */

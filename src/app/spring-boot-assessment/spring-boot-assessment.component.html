@@ -4,9 +4,9 @@
 
 <div *ngIf="!showMessage">
   <!-- Form Section -->
-  <div *ngIf="!showDetails" style="text-align: center; padding:20px;" >
-    <h1>Start Your Assessment</h1>
-    <form [formGroup]="form" (ngSubmit)="startTest()" style="max-width: 500px; padding:20px; margin: 0 auto;">
+  <div *ngIf="!showDetails"  >
+    <h3>Start Your Assessment</h3>
+    <form [formGroup]="form" (ngSubmit)="startTest()" >
       <div class="form-group">
         <label for="name">Name:</label>
         <input id="name" formControlName="name" />

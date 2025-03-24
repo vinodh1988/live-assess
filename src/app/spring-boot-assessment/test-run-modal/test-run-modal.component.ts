@@ -28,6 +28,7 @@ export class TestRunModalComponent {
       name: [data.name, Validators.required],
       email: [data.email, [Validators.required, Validators.email]],
       phone: [data.phone, [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      batchname: [data.batchname, Validators.required],
       questionname: [data.questionname, Validators.required],
       assessmentcode: [data.assessmentcode, Validators.required],
       status: ['ongoing', Validators.required],
@@ -42,6 +43,7 @@ export class TestRunModalComponent {
   }
 
   onSubmit(): void {
+    alert("getting called")
     if (this.form.valid && this.file) {
       this.isProcessing = true;
 
@@ -61,10 +63,11 @@ export class TestRunModalComponent {
           // Call the status update API here
           const statusObject = {
             assessmentcode: this.form.get('assessmentcode')?.value,
-            batchname: 'Batch A', // Update this value based on your data
+            batchname: this.form.get('batchname').value, // Update this value based on your data
             name: this.form.get('name')?.value,
             email: this.form.get('email')?.value,
             phone: this.form.get('phone')?.value,
+            questionname: this.form.get('questionname')?.value,
             status: 'ongoing',
             testresults: this.results,
             score: this.score
@@ -79,7 +82,6 @@ export class TestRunModalComponent {
             }
           });
 
-          this.dialogRef.close({ results: this.results, score: this.score });
         },
         error: (err) => {
           clearTimeout(this.processingTimeout);
@@ -93,9 +95,14 @@ export class TestRunModalComponent {
         alert('The process is taking too long. Please try again later.');
       }, 300000);
     }
+    else
+     alert("form is invalid")
   }
 
   onClose(): void {
-    this.dialogRef.close();
+    if(this.results.length>0 && this.score.length>0)
+       this.dialogRef.close(  { results: this.results, score: this.score });
+    else
+     this.dialogRef.close();
   }
 }

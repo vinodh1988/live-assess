@@ -80,7 +80,7 @@ export class SpringBootAssessmentComponent implements OnInit {
       data: {
         name: this.form.get('name')?.value,
         email: this.form.get('email')?.value,
-        Phone: this.form.get('phone')?.value,
+        phone: this.form.get('phone')?.value,
         batchname: this.assessmentData?.batchname,
         questionname: this.assessmentData?.questionname,
         assessmentcode: this.route.snapshot.paramMap.get('assessmentcode')
@@ -120,8 +120,9 @@ export class SpringBootAssessmentComponent implements OnInit {
           email: this.assessmentData.email,
           phone: this.assessmentData.phone,
           status: 'completed',
-          testresults: this.assessmentData.testresults, // Use the stored test results
-          score: this.assessmentData.score // Use the stored score
+          questionname: this.assessmentData.questionname,
+          testresults: this.testresults, // Use the stored test results
+          score: this.score // Use the stored score
         };
 
         // Call the API to update status
@@ -131,6 +132,7 @@ export class SpringBootAssessmentComponent implements OnInit {
             this.message = 'Assessment successfully submitted';
           },
           error: (err) => {
+            console.error('Failed to submit the assessment:', err);
             alert('Failed to submit the assessment. Please try again later.');
           }
         });

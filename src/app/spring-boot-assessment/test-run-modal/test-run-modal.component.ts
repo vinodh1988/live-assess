@@ -17,7 +17,6 @@ export class TestRunModalComponent {
   processingTimeout: any;
   results: any[] = [];
   score = '';
-  errorMessage = '';
 
   constructor(
     private fb: FormBuilder,
@@ -43,36 +42,58 @@ export class TestRunModalComponent {
   onSubmit(): void {
     if (this.form.valid && this.file) {
       this.isProcessing = true;
-  
+
       const formData = new FormData();
       Object.keys(this.form.value).forEach((key) =>
         formData.append(key, this.form.value[key])
       );
       formData.append('file', this.file);
-  
+
       this.assessmentService.uploadAssessmentData(formData).subscribe({
         next: (response) => {
           clearTimeout(this.processingTimeout);
           this.isProcessing = false;
           this.results = response.results;
           this.score = `${this.results.filter((r: any) => r.status === 'PASSED').length}/${this.results.length}`;
+
+          // Call the status update API here
+          const statusObject = {
+            assessmentcode: this.form.get('assessmentcode')?.value,
+            batchname: 'Batch A', // Update this value based on your data
+            name: this.form.get('name')?.value,
+            email: this.form.get('email')?.value,
+            phone: this.form.get('phone')?.value,
+            status: 'ongoing',
+            testresults: this.results,
+            score: this.score
+          };
+
+          this.assessmentService.updateSpringAssessmentStatus(statusObject).subscribe({
+            next: (statusResponse) => {
+              console.log('Assessment status updated successfully:', statusResponse);
+            },
+            error: (err) => {
+              console.error('Failed to update assessment status:', err);
+            }
+          });
+
+          this.dialogRef.close({ results: this.results, score: this.score });
         },
         error: (err) => {
           clearTimeout(this.processingTimeout);
           this.isProcessing = false;
-          this.errorMessage = 'Submission failed. Please try again later.';
+          alert('Submission failed. Please try again later.');
         }
       });
-  
+
       this.processingTimeout = setTimeout(() => {
         this.isProcessing = false;
-        this.errorMessage = 'The process is taking too long. Please try again later.';
+        alert('The process is taking too long. Please try again later.');
       }, 300000);
     }
-  
   }
 
   onClose(): void {
-    this.dialogRef.close({ results: this.results, score: this.score });
+    this.dialogRef.close();
   }
 }

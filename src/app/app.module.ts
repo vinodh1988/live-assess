@@ -20,6 +20,7 @@ import { SafeurlPipe } from './pipes/safeurl.pipe';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { TestRunModalComponent } from './spring-boot-assessment/test-run-modal/test-run-modal.component';
 import { AngularMaterialModule } from './angular-material/angular-material.module';
+import { FinalSubmitDialogComponent } from './spring-boot-assessment/final-submit-dialog/final-submit-dialog.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { AngularMaterialModule } from './angular-material/angular-material.modul
     AssignmentUploadComponent,
     SpringBootAssessmentComponent,
     SafeurlPipe,
-    TestRunModalComponent
+    TestRunModalComponent,
+    FinalSubmitDialogComponent
   ],
   imports: [
     BrowserModule,

@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AssessmentService } from '../services/assessment.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TestRunModalComponent } from './test-run-modal/test-run-modal.component';
+import { FinalSubmitDialogComponent } from './final-submit-dialog/final-submit-dialog.component';
 
 
 @Component({
@@ -17,7 +18,10 @@ export class SpringBootAssessmentComponent implements OnInit {
   pdfUrl: string = '';
   buttonText = 'Submission Instructions';
   showDetails = false;
-
+  message = '';
+  showMessage = false;
+  testresults: any[] = [];
+  score = '';
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -43,6 +47,17 @@ export class SpringBootAssessmentComponent implements OnInit {
         console.log(this.assessmentData)
         this.pdfUrl = `http://13.90.102.109:5000/spring-boot-files/${this.assessmentData.questionname}`;
         this.showDetails = true; // Toggle to show details
+        if (this.assessmentData.status === 'yettostart') {
+          this.message = 'Assessment yet to start';
+          this.showMessage = true;
+        } else if (this.assessmentData.status === 'expired') {
+          this.message = 'This assessment is expired and not active anymore';
+          this.showMessage = true;
+        } else if (this.assessmentData.questionname === 'completed') {
+          this.message = 'You have completed this assessment already';
+          this.showMessage = true;
+        }
+  
       });
     }
   }
@@ -73,10 +88,51 @@ export class SpringBootAssessmentComponent implements OnInit {
   
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
+   
+        this.testresults = result.results; // Save Test Run results
+        this.score = result.score;
         console.log('Results:', result.results);
         console.log('Score:', result.score);
       }
     });
   
   }
+
+  finalSubmit(): void {
+    const dialogRef = this.dialog.open(FinalSubmitDialogComponent, {
+      width: '500px',
+      data: {
+        message: 'You are about to Final Submit your tested project. Remember your code will not be compiled and executed. Your last test run results will be uploaded. If you want to check the code correctness before submitting, click Test Run and check the results, then submit.'
+      },
+      disableClose: true // Prevent closing on outside click
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'ok') {
+        // Prepare the API call payload
+        const statusObject = {
+          assessmentcode: this.assessmentData.assessmentcode,
+          batchname: this.assessmentData.batchname, // Replace with dynamic batch name
+          name: this.assessmentData.name,
+          email: this.assessmentData.email,
+          phone: this.assessmentData.phone,
+          status: 'completed',
+          testresults: this.assessmentData.testresults, // Use the stored test results
+          score: this.assessmentData.score // Use the stored score
+        };
+
+        // Call the API to update status
+        this.assessmentService.updateSpringAssessmentStatus(statusObject).subscribe({
+          next: (response) => {
+            this.showMessage = true;
+            this.message = 'Assessment successfully submitted';
+          },
+          error: (err) => {
+            alert('Failed to submit the assessment. Please try again later.');
+          }
+        });
+      }
+    });
+  }
+
 }

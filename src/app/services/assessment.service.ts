@@ -62,4 +62,8 @@ export class AssessmentService {
     return this.http.post(`${this.apiUrl}/spring-assessments/spring-upload`, formData,this.getHeaders());
   }
 
+  updateSpringAssessmentStatus(statusObject: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/spring-assessments/status`, statusObject, this.getHeaders());
+  }
+
 }

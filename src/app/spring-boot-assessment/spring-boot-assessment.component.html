@@ -1,36 +1,42 @@
-<div *ngIf="!showDetails">
-    <!-- Form Section -->
+<div *ngIf="showMessage" class="message-container">
+  <h2>{{ message }}</h2>
+</div>
+
+<div *ngIf="!showMessage">
+  <!-- Form Section -->
+  <div *ngIf="!showDetails">
     <h1>Start Your Assessment</h1>
-    <form [formGroup]="form" (ngSubmit)="startTest()">
-      <div>
+    <form [formGroup]="form" (ngSubmit)="startTest()" style="max-width: 500px; margin: 0 auto;">
+      <div class="form-group">
         <label for="name">Name:</label>
         <input id="name" formControlName="name" />
       </div>
-      <div>
+      <div class="form-group">
         <label for="email">Email:</label>
         <input id="email" formControlName="email" />
       </div>
-      <div>
+      <div class="form-group">
         <label for="phone">Phone:</label>
         <input id="phone" formControlName="phone" />
       </div>
       <button type="submit" [disabled]="form.invalid">Start Test</button>
     </form>
   </div>
-  
+
+  <!-- Assessment Details Section -->
   <div *ngIf="showDetails">
     <h1>{{ assessmentData.name }}</h1>
     <p>Duration: 120 Minutes</p>
-  
+
     <!-- Buttons Section -->
     <div>
-      <button (click)="testRun()">Test Run</button>
+      <button>Test Run</button>
       <button>Final Submit</button>
       <button (click)="toggleInstructions()" style="float: right">
         {{ buttonText }}
       </button>
     </div>
-  
+
     <!-- PDF Viewer Section -->
     <ngx-extended-pdf-viewer
       [src]="pdfUrl"
@@ -39,4 +45,4 @@
       style="border: 1px solid #ddd; border-radius: 5px; margin-top: 20px;"
     ></ngx-extended-pdf-viewer>
   </div>
-  
+</div>

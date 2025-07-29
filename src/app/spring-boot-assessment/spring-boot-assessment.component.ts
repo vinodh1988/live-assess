@@ -46,7 +46,7 @@ export class SpringBootAssessmentComponent implements OnInit {
       this.assessmentService.getAssessmentDetails(assessmentcode, email).subscribe((data) => {
         this.assessmentData = data;
         console.log(this.assessmentData)
-        this.pdfUrl = `http://13.90.102.109:5000/spring-boot-files/${this.assessmentData.questionname}`;
+        this.pdfUrl = `http://3.6.160.18:5000/spring-boot-files/${this.assessmentData.questionname}`;
         this.showDetails = true; // Toggle to show details
         if (this.assessmentData.status === 'yettostart') {
           this.message = 'Assessment yet to start';
@@ -66,10 +66,10 @@ export class SpringBootAssessmentComponent implements OnInit {
   toggleInstructions(): void {
     if (this.buttonText === 'Submission Instructions') {
       this.buttonText = 'View Question';
-      this.pdfUrl = `http://13.90.102.109:5000/spring-boot-files/instructions`;
+      this.pdfUrl = `http://3.6.160.18:5000/spring-boot-files/instructions`;
     } else {
       this.buttonText = 'Submission Instructions';
-      this.pdfUrl = `http://13.90.102.109:5000/spring-boot-files/${this.assessmentData.questionname}`;
+      this.pdfUrl = `http://3.6.160.18:5000/spring-boot-files/${this.assessmentData.questionname}`;
     }
   }
 
